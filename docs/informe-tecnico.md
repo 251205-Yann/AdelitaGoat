@@ -2,7 +2,7 @@
 
 **Proyecto escolar:** aplicación móvil para apartar comida en puestos cercanos a la Universidad Politécnica de Chiapas  
 **Versión del informe:** 10 de noviembre de 2026  
-**Estado:** aplicación y API desarrolladas; despliegue público en preparación
+**Estado:** aplicación y API desarrolladas; backend público y base de datos desplegados; APK de demostración compilado
 
 ## 1. Resumen del producto
 
@@ -40,7 +40,7 @@ Las cuentas usan correo y contraseña. La API conserva las sesiones y verifica e
 | Persistencia | PostgreSQL, HikariCP y Flyway | Datos relacionales, conexiones, migraciones y transacciones. |
 | Prueba local sin PostgreSQL | H2 en modo de compatibilidad PostgreSQL | Permite desarrollar en una laptop sin Docker; se desactiva en el despliegue. |
 
-El APK se comunica con la API mediante una URL configurable en compilación (`API_BASE_URL`). En el emulador local se usa `http://10.0.2.2:8080`. Para distribución con servidor público se requiere una compilación nueva con URL HTTPS. La API se configura mediante `DB_URL`, `DB_USER`, `DB_PASSWORD`, `DB_ALLOW_EMBEDDED_FALLBACK`, `SEED_DEMO_DATA` y `PORT`.
+El APK se comunica con la API mediante una URL configurable en compilación (`API_BASE_URL`). El APK entregable apunta a `https://adelitagoat-api.onrender.com`. La API se configura mediante `DB_URL`, `DB_USER`, `DB_PASSWORD`, `DB_ALLOW_EMBEDDED_FALLBACK`, `SEED_DEMO_DATA` y `PORT`.
 
 ## 5. Modelo de datos
 
@@ -69,15 +69,17 @@ Los correos de prueba usan el dominio reservado `example.invalid` y sólo aparec
 
 ## 8. Pruebas y evidencia
 
-En la última verificación local se ejecutaron pruebas automatizadas del servidor y Android, además de compilar el APK. Los casos incluyen base nueva sin datos demo, registro y acceso, creación y edición de puesto por un vendedor, rechazo de edición ajena, catálogo, precios e idempotencia de pedidos, estados, favoritos y métodos HTTP reales del cliente Android. El APK de desarrollo se encuentra en `android/app/build/outputs/apk/debug/app-debug.apk`.
+En la última verificación local se ejecutaron 10 pruebas automatizadas del servidor y 9 de Android, sin fallos, además de compilar el APK. Los casos incluyen base nueva sin datos demo, registro y acceso, creación y edición de puesto por un vendedor, rechazo de edición ajena, catálogo, precios e idempotencia de pedidos, estados, favoritos y métodos HTTP reales del cliente Android. El APK público de demostración se encuentra en `output/apk/AdelitaGOAT-public-api-debug.apk` y pesa 18 153 283 bytes.
 
 La revisión visual en emulador confirmó el arranque, la pantalla de acceso sin botones demo, el inicio de sesión de un vendedor nuevo y la aparición del formulario **Registrar puesto**. Estas observaciones se realizaron con una base local aislada de prueba; no representan un despliegue público ni un comercio real.
 
+El 10 de noviembre se verificó la API publicada: `/api/health` respondió `UP` con `database=CONNECTED` y `databaseMode=POSTGRESQL_SUPABASE_OR_REMOTE`. Una prueba de extremo a extremo sobre HTTPS registró un vendedor y un cliente temporales, creó un puesto y un producto, y generó un pedido de dos unidades por 5 000 centavos. Después se eliminaron los registros de prueba; se confirmó que la base quedó con cero usuarios, puestos, productos y pedidos, y sólo seis categorías de referencia.
+
 ## 9. Ejecución y despliegue
 
-Para desarrollo local, abrir `android/` en Android Studio y ejecutar `server/` con JDK 21. [README.md](../README.md) contiene comandos y variables. Para la presentación se está preparando PostgreSQL alojado en Supabase, la API Ktor como servicio web en Render y un APK compilado con la URL HTTPS de esa API. El contenedor desactiva la base local y las semillas demo. Las credenciales de la base deben almacenarse como variables secretas del proveedor, nunca en el repositorio ni en el APK.
+Para desarrollo local, abrir `android/` en Android Studio y ejecutar `server/` con JDK 21. [README.md](../README.md) contiene comandos y variables. El código está en [GitHub](https://github.com/251205-Yann/AdelitaGoat), PostgreSQL está en el proyecto Supabase `adelitagoat-escolar` y la API Ktor se ejecuta en [Render](https://adelitagoat-api.onrender.com/api/health). El backend usa el Session Pooler de Supabase con TLS, usuario exclusivo y esquema privado `adelita`. El contenedor desactiva la base local y las semillas demo. Las credenciales se guardan como variables privadas de Render y no se incluyen en el repositorio ni en el APK.
 
-**Verificación pendiente antes de entregar:** confirmar la URL pública de `/api/health`, ejecutar una reserva completa contra el servicio desplegado y compilar y probar el APK final apuntando a esa URL.
+El APK se compiló con `API_BASE_URL=https://adelitagoat-api.onrender.com` y `ENABLE_DEMO_ACCOUNTS=false`. Es una compilación **debug firmada para instalación y evaluación escolar**, no un paquete de publicación para Google Play. Queda pendiente validar el recorrido en un teléfono físico con conexión móvil y cargar el comercio real cuando se reciban sus datos autorizados.
 
 ## 10. Limitaciones y siguientes datos necesarios
 

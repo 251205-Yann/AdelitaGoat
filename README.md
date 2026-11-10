@@ -1,6 +1,8 @@
 # AdelitaGOAT — Sistema de Apartado y Pago en Efectivo para Puestos Universitarios
 
-Aplicación móvil Android (**Kotlin + Jetpack Compose**) y API Backend (**Ktor + PostgreSQL**) orientada a estudiantes y vendedores de puestos de comida ubicados frente a la **Universidad Politécnica de Chiapas (UP Chiapas)**. Permite apartar alimentos desde el celular, recibir un comprobante oficial con folio único (`#A-XXXX`), evitar filas en recesos cortos y pagar **en efectivo al recoger en mostrador** (`EFECTIVO_AL_RECOGER`).
+Aplicación móvil Android (**Kotlin + Jetpack Compose**) y API Backend (**Ktor + PostgreSQL**) orientada a estudiantes y vendedores de puestos de comida ubicados frente a la **Universidad Politécnica de Chiapas (UP Chiapas)**. Permite apartar alimentos desde el celular, recibir un folio único del pedido (`#A-XXXX`), evitar filas en recesos cortos y pagar **en efectivo al recoger en mostrador** (`EFECTIVO_AL_RECOGER`).
+
+**Despliegue escolar (10 de noviembre de 2026):** [API pública](https://adelitagoat-api.onrender.com/api/health) en Render, PostgreSQL en [Supabase](https://supabase.com/dashboard/project/fhodeskjjpjtllcapdzw) y APK de demostración compilado con esa URL HTTPS. La base contiene categorías de referencia y no contiene usuarios, puestos ni pedidos ficticios. El informe está en [`docs/informe-tecnico.md`](docs/informe-tecnico.md).
 
 ---
 
@@ -23,7 +25,7 @@ Aplicación móvil Android (**Kotlin + Jetpack Compose**) y API Backend (**Ktor 
 - **Android Studio:** Ladybug / Meerkat o superior con **Android SDK 35** (`ANDROID_HOME=C:\Users\danie\AppData\Local\Android\Sdk`).
 - **Base de datos:**
   - **Con Docker:** Docker Desktop / Docker Engine para levantar el contenedor `postgres:16-alpine` mediante `docker-compose.yml`.
-  - **Sin Docker (Fallback automático de desarrollo local):** Si el servicio PostgreSQL externo en `localhost:5432` no está activo en la máquina anfitriona, `DatabaseFactory` activa automáticamente una base de datos local persistente en modo compatibilidad PostgreSQL (`./server/build/data/adelitagoat_pg`), ejecutando las mismas migraciones SQL de Flyway (`V1__init_schema.sql`) y semillas demo idempotentes.
+  - **Sin Docker (Fallback automático de desarrollo local):** Si el servicio PostgreSQL externo en `localhost:5432` no está activo en la máquina anfitriona, `DatabaseFactory` activa automáticamente una base de datos local persistente en modo compatibilidad PostgreSQL (`./server/build/data/adelitagoat_pg`) y ejecuta las migraciones SQL. Los datos demo se cargan sólo con `SEED_DEMO_DATA=true`.
 
 ---
 
@@ -152,23 +154,23 @@ El repositorio incluye un [`Dockerfile`](Dockerfile) multi-stage (JDK 21 → JRE
 
 1. En tu proyecto de **Supabase**, haz clic en el botón **Connect** (barra superior) → pestaña **Connection String** / **JDBC**.
 2. Selecciona **Method: Session pooler** (verifica que el puerto sea **`5432`**, no `6543`).
-3. Identifica tus tres valores de conexión:
+3. Identifica tus tres valores de conexión. El despliegue escolar usa una cuenta exclusiva `adelita_app` y un esquema privado `adelita`; no necesita la contraseña administrativa `postgres`:
    - **Host del pooler:** `aws-0-<region>.pooler.supabase.com` (por ejemplo, `aws-0-us-east-1.pooler.supabase.com`)
-   - **Usuario (`DB_USER`):** `postgres.<project_ref>` (incluyendo el sufijo del proyecto después del punto)
-   - **Contraseña (`DB_PASSWORD`):** La contraseña de base de datos que definiste al crear el proyecto en Supabase (sin corchetes)
+   - **Usuario (`DB_USER`):** `adelita_app.fhodeskjjpjtllcapdzw`
+   - **Contraseña (`DB_PASSWORD`):** contraseña del usuario exclusivo, almacenada sólo en las variables privadas de Render y en el archivo local ignorado `.env.production.local`.
 4. Construye el `DB_URL` en formato JDBC con TLS obligatorio (`sslmode=require`):
    ```text
-   jdbc:postgresql://aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require
+   jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require&currentSchema=adelita
    ```
    *(Nota: `DatabaseFactory.normalizePostgresJdbcUrl` también añade automáticamente `?sslmode=require` si se omite en un host remoto y convierte prefijos `postgresql://` a `jdbc:postgresql://`, además de enmascarar cualquier secreto en logs).*
 
 #### Paso 2: Configurar el Web Service en Render Free (Docker)
 
-1. Sube este repositorio a tu cuenta de GitHub/GitLab (el repositorio no contiene ningún secreto ni datos demo activos).
+1. El código está publicado en [251205-Yann/AdelitaGoat](https://github.com/251205-Yann/AdelitaGoat) sin secretos ni datos demo activos.
 2. En **Render Dashboard**, selecciona **New +** → **Web Service** y conecta tu repositorio.
 3. Configura el servicio con estos parámetros:
    - **Runtime / Environment:** `Docker`
-   - **Region:** La más cercana a la región de tu proyecto Supabase (p. ej. `Ohio (US East)` o `Oregon (US West)`)
+   - **Region:** `Virginia`, próxima al proyecto Supabase de `us-east-1`.
    - **Root Directory:** *(déjalo vacío para usar el `Dockerfile` de la raíz; o escribe `server` si prefieres usar `server/Dockerfile`)*
    - **Instance Type:** `Free`
    - **Health Check Path (Advanced):** `/api/health`
@@ -176,36 +178,36 @@ El repositorio incluye un [`Dockerfile`](Dockerfile) multi-stage (JDK 21 → JRE
 
 | Variable | Valor en Render | Descripción |
 |---|---|---|
-| `DB_URL` | `jdbc:postgresql://aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require` | Cadena JDBC del **Session Pooler** (IPv4, puerto `5432`, TLS requerido). |
-| `DB_USER` | `postgres.<project_ref>` | Usuario del pooler de Supabase. |
-| `DB_PASSWORD` | `<TU_PASSWORD_DE_SUPABASE>` | Contraseña real de la base de datos (secreto en Render). |
+| `DB_URL` | `jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require&currentSchema=adelita` | Cadena JDBC del **Session Pooler** (IPv4, puerto `5432`, TLS y esquema privado). |
+| `DB_USER` | `adelita_app.fhodeskjjpjtllcapdzw` | Usuario exclusivo de la aplicación. |
+| `DB_PASSWORD` | Valor secreto guardado en Render | Contraseña del usuario exclusivo; nunca se publica en GitHub ni en el APK. |
 | `DB_ALLOW_EMBEDDED_FALLBACK` | `false` | Desactiva cualquier base embebida/local; exige conexión real a Supabase. |
 | `SEED_DEMO_DATA` | `false` | Garantiza que **no** se carguen usuarios, puestos ni pedidos demo. |
 | `DB_MAX_POOL_SIZE` | `4` | Pool HikariCP pequeño (`maxPoolSize=4`, `minimumIdle=1`) ideal para Session Pooler en plan gratuito. |
 | `PORT` | `8080` | Puerto interno en el que escucha Ktor dentro del contenedor. |
 
-5.Al iniciar el despliegue, Render ejecutará automáticamente las migraciones Flyway (`V1__init_schema.sql`) sobre Supabase y cargará únicamente las **6 categorías de referencia**.
+5. Al iniciar el despliegue, Render valida las migraciones Flyway sobre Supabase y verifica las **6 categorías de referencia**.
 6. Verifica que el backend público esté en línea y conectado a Supabase ejecutando desde PowerShell:
    ```powershell
-   curl.exe https://<tu-servicio>.onrender.com/api/health
-   curl.exe https://<tu-servicio>.onrender.com/api/categories
+   curl.exe https://adelitagoat-api.onrender.com/api/health
+   curl.exe https://adelitagoat-api.onrender.com/api/categories
    ```
    El endpoint `/api/health` responderá `{"status":"UP","databaseMode":"POSTGRESQL_SUPABASE_OR_REMOTE"}`.
 
 #### Paso 3: Generar el APK de Android Conectado a la URL Pública HTTPS
 
-Con la URL pública de Render (`https://<tu-servicio>.onrender.com`, sin barra diagonal al final), compila el APK inyectando `API_BASE_URL` y manteniendo deshabilitados los botones demo (`ENABLE_DEMO_ACCOUNTS=false`):
+Con la URL pública de Render, compila el APK inyectando `API_BASE_URL` y manteniendo deshabilitados los botones demo (`ENABLE_DEMO_ACCOUNTS=false`):
 
 ```powershell
 $env:JAVA_HOME = "$env:USERPROFILE\.jdks\temurin-21"
 $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 cd C:\Users\danie\Downloads\yandelApp\android
-.\gradlew.bat :app:assembleDebug -PAPI_BASE_URL="https://<tu-servicio>.onrender.com" -PENABLE_DEMO_ACCOUNTS=false
+.\gradlew.bat :app:assembleDebug -PAPI_BASE_URL="https://adelitagoat-api.onrender.com" -PENABLE_DEMO_ACCOUNTS=false
 ```
 
 - El APK listo para instalar en dispositivos físicos o emulador se generará en:
   `C:\Users\danie\Downloads\yandelApp\android\app\build\outputs\apk\debug\app-debug.apk`
-- **Cambio rápido de URL sin recompilar:** Si ya tienes el APK instalado y deseas apuntarlo a otra URL de Render, toca el botón **API** en la esquina superior derecha de la pantalla de inicio de sesión (o en la pestaña **Perfil**), ingresa `https://<tu-servicio>.onrender.com` y guarda.
+- **Cambio rápido de URL sin recompilar:** Si ya tienes el APK instalado y deseas apuntarlo a otra URL, toca el botón **API** en la esquina superior derecha de la pantalla de inicio de sesión (o en la pestaña **Perfil**), ingresa la nueva URL HTTPS y guarda.
 
 ### 5.3. Modo Demo Optativo (`.example.invalid`)
 

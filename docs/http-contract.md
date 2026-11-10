@@ -2,6 +2,7 @@
 
 Base URL local (desarrollo): `http://localhost:8080`  
 Base URL desde emulador Android: `http://10.0.2.2:8080`
+Base URL pública (Render): `https://adelitagoat-api.onrender.com`
 
 ## Convenciones Generales
 

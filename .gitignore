@@ -18,3 +18,7 @@ local.properties
 docs/adelita-smoke.png
 .env.*
 !.env.example
+
+# Artefactos locales de revisión y APK publicado como adjunto de GitHub Release
+tmp/
+output/apk/

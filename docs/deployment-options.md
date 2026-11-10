@@ -1,6 +1,6 @@
 # Opciones de despliegue para la demostración escolar
 
-Consulta realizada el 7 de noviembre de 2026. Todavía no se ha desplegado el proyecto ni creado ninguna cuenta externa. Los límites y precios pueden cambiar; verificar las páginas oficiales al activar el servicio.
+Consulta inicial realizada el 7 de noviembre de 2026. **Actualización del 10 de noviembre:** la opción elegida y desplegada es Render Free para la API y Supabase Free para PostgreSQL. La API está en https://adelitagoat-api.onrender.com y el proyecto de base se llama `adelitagoat-escolar`. La comparación siguiente queda como antecedente de la decisión. Los límites y precios pueden cambiar.
 
 ## Recomendación inicial
 
