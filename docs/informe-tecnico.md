@@ -69,7 +69,7 @@ Los correos de prueba usan el dominio reservado `example.invalid` y sólo aparec
 
 ## 8. Pruebas y evidencia
 
-En la última verificación local se ejecutaron 10 pruebas automatizadas del servidor y 9 de Android, sin fallos, además de compilar el APK. Los casos incluyen base nueva sin datos demo, registro y acceso, creación y edición de puesto por un vendedor, rechazo de edición ajena, catálogo, precios e idempotencia de pedidos, estados, favoritos y métodos HTTP reales del cliente Android. El APK público de demostración se encuentra en `output/apk/AdelitaGOAT-public-api-debug.apk` y pesa 18 153 283 bytes.
+En la última verificación local se ejecutaron 10 pruebas automatizadas del servidor y 9 de Android, sin fallos, además de compilar el APK. Los casos incluyen base nueva sin datos demo, registro y acceso, creación y edición de puesto por un vendedor, rechazo de edición ajena, catálogo, precios e idempotencia de pedidos, estados, favoritos y métodos HTTP reales del cliente Android. El APK público de demostración se encuentra en `output/apk/AdelitaGOAT-public-api-debug.apk` y pesa 17 814 356 bytes. La configuración de la API no aparece en el inicio de sesión ni en el perfil; la URL se establece al compilar.
 
 La revisión visual en emulador confirmó el arranque, la pantalla de acceso sin botones demo, el inicio de sesión de un vendedor nuevo y la aparición del formulario **Registrar puesto**. Estas observaciones se realizaron con una base local aislada de prueba; no representan un despliegue público ni un comercio real.
 
@@ -85,6 +85,4 @@ El APK se compiló con `API_BASE_URL=https://adelitagoat-api.onrender.com` y `EN
 
 ## 10. Limitaciones y siguientes datos necesarios
 
-El MVP no procesa pagos digitales ni envía notificaciones push. El estado de pedidos se consulta desde la aplicación. El comercio real debe proporcionar nombre autorizado, menú y precios vigentes, horario, ubicación puntual y, si quiere publicarlo, un contacto. Hasta recibirlos, una demostración puede usar sólo cuentas y registros marcados expresamente como prueba.
-
-La infraestructura gratuita puede suspender servicios inactivos. Debe probarse el arranque del backend y la base antes de la exposición.
+El MVP no procesa pagos digitales ni envía notificaciones push. Los pedidos se consultan desde la app. Para cargar el comercio real faltan nombre autorizado, menú, precios, horario, ubicación y contacto público opcional. La infraestructura gratuita puede suspender servicios inactivos; verificar el arranque antes de la exposición.
