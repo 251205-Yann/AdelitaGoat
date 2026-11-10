@@ -1,0 +1,20 @@
+# Gradle y compilación
+.gradle/
+**/build/
+!src/**/build/
+
+# Configuración local de IDE y SDK
+.idea/
+*.iml
+local.properties
+
+# Variables de entorno y datos locales
+.env
+*.db
+*.mv.db
+*.trace.db
+
+# Capturas y secretos de pruebas locales
+docs/adelita-smoke.png
+.env.*
+!.env.example

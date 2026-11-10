@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: adelitagoat-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-adelitagoat}
+      POSTGRES_USER: ${POSTGRES_USER:-adelita_dev}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-adelita_local_dev_only}
+      TZ: America/Mexico_City
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - adelitagoat_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-adelita_dev} -d ${POSTGRES_DB:-adelitagoat}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  adelitagoat_pgdata:

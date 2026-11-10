@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: adelitagoat-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: DB_URL
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_ALLOW_EMBEDDED_FALLBACK
+        value: "false"
+      - key: SEED_DEMO_DATA
+        value: "false"
+      - key: DB_MAX_POOL_SIZE
+        value: "4"

@@ -1,0 +1,86 @@
+# Informe técnico — AdelitaGOAT
+
+**Proyecto escolar:** aplicación móvil para apartar comida en puestos cercanos a la Universidad Politécnica de Chiapas  
+**Versión del informe:** 10 de noviembre de 2026  
+**Estado:** aplicación y API desarrolladas; despliegue público en preparación
+
+## 1. Resumen del producto
+
+AdelitaGOAT permite que un estudiante consulte el menú de un puesto cercano a la universidad, seleccione productos, confirme un apartado y reciba un folio. El vendedor consulta las comandas, las prepara y marca su entrega. El pago del MVP se realiza **en efectivo al recoger**: la aplicación no procesa tarjetas, transferencias ni dinero digital.
+
+La idea responde a una situación concreta: los recesos entre clases son cortos y la fila de un puesto puede consumir parte importante de ese tiempo. La aplicación adelanta la elección y la comunicación del pedido; la preparación y entrega siguen a cargo del comercio.
+
+## 2. Usuarios y recorridos principales
+
+| Usuario | Recorrido |
+|---|---|
+| Cliente | Se registra, inicia sesión, explora puestos y productos, busca y filtra, añade productos de un mismo puesto al carrito, confirma el apartado, consulta folio y estado, recoge y paga en efectivo. Puede guardar favoritos y calificar un pedido entregado. |
+| Vendedor | Se registra, crea o edita su puesto con nombre, descripción, ubicación concreta, categoría, tiempo estimado y estado abierto/cerrado; carga productos y precios; cambia disponibilidad; consulta pedidos y avanza sus estados hasta la entrega. |
+
+Las cuentas usan correo y contraseña. La API conserva las sesiones y verifica el rol y la propiedad del puesto antes de permitir cambios. Cuando todavía no existe un puesto, la app muestra un estado vacío y ofrece al vendedor el formulario para registrarlo.
+
+## 3. Alcance y reglas de negocio
+
+- Un carrito y un pedido contienen productos de **un solo puesto**.
+- El servidor consulta los precios vigentes y calcula el total; el cliente no determina el importe confiable.
+- Cada pedido recibe un folio único y guarda el precio unitario que tenía cada artículo al confirmarse.
+- La clave de idempotencia evita duplicar pedidos cuando se reintenta una solicitud.
+- Los estados siguen el recorrido `RECIBIDO → EN_PREPARACION → LISTO → ENTREGADO`, con cancelación según las reglas del servidor.
+- El cobro se registra al marcar la entrega, con el método `EFECTIVO_AL_RECOGER`.
+- Sólo el dueño puede editar su puesto, menú y pedidos. Un cliente no puede usar las rutas del vendedor.
+- Las cuentas, puestos y pedidos de demostración se cargan sólo si `SEED_DEMO_DATA=true`; el arranque normal no crea datos ficticios. Las categorías de referencia sí están disponibles.
+
+## 4. Arquitectura y tecnologías
+
+| Componente | Implementación | Función |
+|---|---|---|
+| Aplicación Android | Kotlin, Jetpack Compose, Material 3, Navigation y ViewModels | Interfaz de cliente y vendedor, estado de pantallas y navegación. |
+| Cliente de red | OkHttp, JSON con kotlinx.serialization | Solicitudes HTTP reales a la API Ktor, incluidas rutas `PATCH`. |
+| API | Kotlin y Ktor 3 | Autenticación, catálogo, pedidos, favoritos, calificaciones y administración del vendedor. |
+| Persistencia | PostgreSQL, HikariCP y Flyway | Datos relacionales, conexiones, migraciones y transacciones. |
+| Prueba local sin PostgreSQL | H2 en modo de compatibilidad PostgreSQL | Permite desarrollar en una laptop sin Docker; se desactiva en el despliegue. |
+
+El APK se comunica con la API mediante una URL configurable en compilación (`API_BASE_URL`). En el emulador local se usa `http://10.0.2.2:8080`. Para distribución con servidor público se requiere una compilación nueva con URL HTTPS. La API se configura mediante `DB_URL`, `DB_USER`, `DB_PASSWORD`, `DB_ALLOW_EMBEDDED_FALLBACK`, `SEED_DEMO_DATA` y `PORT`.
+
+## 5. Modelo de datos
+
+La migración inicial define `users`, `sessions`, `categories`, `stalls`, `products`, `favorites`, `orders`, `order_items` y `ratings`. Las relaciones principales son: un vendedor posee puestos; cada puesto tiene productos y recibe pedidos; un pedido pertenece a un cliente y contiene líneas con precio histórico; cada calificación corresponde a un pedido entregado. Los importes se almacenan como centavos enteros para evitar errores de redondeo.
+
+Flyway registra la versión de esquema y valida su checksum al reiniciar. La migración `V1__init_schema.sql` se conserva intacta para que una base ya inicializada pueda arrancar. Los cambios futuros de estructura deben añadirse como migraciones nuevas.
+
+## 6. Contrato funcional de la API
+
+| Área | Rutas principales |
+|---|---|
+| Salud | `GET /api/health` |
+| Acceso | `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` |
+| Catálogo | `GET /api/categories`, `GET /api/stalls`, `GET /api/stalls/{id}`, `GET /api/products/{id}` |
+| Apartados | `POST /api/orders`, `GET /api/orders`, `GET /api/orders/{id}` |
+| Favoritos y evaluación | Rutas de favoritos y calificación de pedidos entregados |
+| Vendedor | `GET /api/vendor/stalls`, `POST /api/vendor/stalls`, `PUT /api/vendor/stalls/{id}`, gestión de productos y estados de pedidos |
+
+El detalle de métodos, cuerpos JSON y respuestas de error está en [http-contract.md](http-contract.md). Las rutas protegidas reciben un token de sesión. La API responde con errores de validación, autenticación, autorización, inexistencia o conflicto según corresponda.
+
+## 7. Datos reales y datos de prueba
+
+Los PDF y el diseño describen el caso de uso y muestran **ejemplos** de puestos, platillos y precios. No confirman el nombre, menú, precios, horario, ubicación puntual o contacto público de un comercio real. La [auditoría de fuentes](requirements.md) identifica estos datos pendientes. Por eso la base normal inicia sin comercios ni cuentas inventados y permite capturarlos desde la app de vendedor.
+
+Los correos de prueba usan el dominio reservado `example.invalid` y sólo aparecen cuando se activa explícitamente el entorno demo. No se presenta un correo con dominio institucional como si fuera una cuenta autorizada.
+
+## 8. Pruebas y evidencia
+
+En la última verificación local se ejecutaron pruebas automatizadas del servidor y Android, además de compilar el APK. Los casos incluyen base nueva sin datos demo, registro y acceso, creación y edición de puesto por un vendedor, rechazo de edición ajena, catálogo, precios e idempotencia de pedidos, estados, favoritos y métodos HTTP reales del cliente Android. El APK de desarrollo se encuentra en `android/app/build/outputs/apk/debug/app-debug.apk`.
+
+La revisión visual en emulador confirmó el arranque, la pantalla de acceso sin botones demo, el inicio de sesión de un vendedor nuevo y la aparición del formulario **Registrar puesto**. Estas observaciones se realizaron con una base local aislada de prueba; no representan un despliegue público ni un comercio real.
+
+## 9. Ejecución y despliegue
+
+Para desarrollo local, abrir `android/` en Android Studio y ejecutar `server/` con JDK 21. [README.md](../README.md) contiene comandos y variables. Para la presentación se está preparando PostgreSQL alojado en Supabase, la API Ktor como servicio web en Render y un APK compilado con la URL HTTPS de esa API. El contenedor desactiva la base local y las semillas demo. Las credenciales de la base deben almacenarse como variables secretas del proveedor, nunca en el repositorio ni en el APK.
+
+**Verificación pendiente antes de entregar:** confirmar la URL pública de `/api/health`, ejecutar una reserva completa contra el servicio desplegado y compilar y probar el APK final apuntando a esa URL.
+
+## 10. Limitaciones y siguientes datos necesarios
+
+El MVP no procesa pagos digitales ni envía notificaciones push. El estado de pedidos se consulta desde la aplicación. El comercio real debe proporcionar nombre autorizado, menú y precios vigentes, horario, ubicación puntual y, si quiere publicarlo, un contacto. Hasta recibirlos, una demostración puede usar sólo cuentas y registros marcados expresamente como prueba.
+
+La infraestructura gratuita puede suspender servicios inactivos. Debe probarse el arranque del backend y la base antes de la exposición.

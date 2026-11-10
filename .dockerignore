@@ -1,0 +1,19 @@
+# Ignore Android project and heavy assets when building Backend Docker image from repo root
+android/
+docs/
+.git/
+.gitignore
+.gradle/
+.idea/
+*.pdf
+*.png
+*.md
+
+# Ignore local Gradle caches, build outputs, and embedded local databases
+**/build/
+**/.gradle/
+**/local.properties
+**/*.db
+**/*.mv.db
+**/*.trace.db
+**/.DS_Store

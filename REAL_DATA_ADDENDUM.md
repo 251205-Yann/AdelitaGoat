@@ -1,0 +1,15 @@
+# AdelitaGOAT — corrección de datos reales y arranque vacío
+
+Este anexo actualiza `IMPLEMENTATION_BRIEF.md`. Es un proyecto escolar sobre pedidos a un puesto de comida fuera de la universidad. Los datos reales del puesto todavía no están confirmados por el usuario; llegarán en aproximadamente dos días. Los ejemplos actuales sirven sólo para probar el software. La aplicación debe funcionar con registros nuevos sin depender de ellos.
+
+## Criterios de aceptación
+
+1. Revisar los dos PDF originales y `Untitled.png`. Registrar en `docs/requirements.md` qué nombre, ubicación, horario, menú, precios y contacto del puesto están explícitamente documentados y cuáles no. No convertir ejemplos o inferencias en datos reales.
+2. Una base de datos nueva de uso normal debe iniciar sin usuarios, puestos, productos ni pedidos ficticios. La carga de semillas de demostración debe ser optativa mediante una variable explícita, desactivada por defecto. No introducir cuentas demo en un despliegue normal. Mantener las categorías de referencia necesarias para poder registrar un puesto y sus productos; separarlas de la carga demo o permitir crearlas de forma legítima.
+3. Sustituir en las semillas y pruebas los correos ficticios con dominio `upchiapas.edu.mx` o cualquier otro dominio que parezca oficial por dominios inequívocos de prueba (`example.invalid` o equivalente). Los datos demo y credenciales de prueba deben aparecer únicamente en documentación de desarrollo y una compilación/configuración demo; la app de uso normal no debe ofrecer botones de acceso demo.
+4. Un vendedor recién registrado debe poder crear y editar su propio puesto desde Android, con respaldo real en la API y la base de datos. Datos mínimos: nombre, descripción, ubicación textual concreta, categoría y tiempo estimado de preparación; controlar estado abierto/cerrado. Si se añade horario o contacto público, que sean campos opcionales y nunca inventados. Después debe poder cargar productos y precios como ya permite la app. Validar entradas, permisos de propietario y errores en backend y UI.
+5. Un cliente debe ver un estado vacío claro cuando aún no hay puestos, y poder consultar el puesto y menú introducidos por el vendedor tras refrescar. No usar un catálogo hardcodeado como sustituto de la API.
+6. Actualizar contrato HTTP, trazabilidad y README con el flujo desde base vacía, configuración local sin Docker, y distinción entre entorno demo y normal. Mantener las pruebas existentes y añadir pruebas significativas de alta/edición de puesto, autorización y catálogo sobre base sin semillas. Compilar backend y APK.
+7. No desplegar ni crear cuentas externas todavía. Preparar parámetros de entorno para PostgreSQL remoto y URL HTTPS del API en Android. No incluir credenciales o datos personales reales en el repositorio. Reportar límites verificados con precisión.
+
+El objetivo es una app funcional para capturar datos reales cuando el usuario los consiga, sin presentar identidad institucional o comercios inventados como existentes.

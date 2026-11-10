@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Fondo Azul Noche #2F3C7E -->
+    <path
+        android:fillColor="#2F3C7E"
+        android:pathData="M0,0h108v108h-108z" />
+    <!-- Círculo interior Coral #F96167 -->
+    <path
+        android:fillColor="#F96167"
+        android:pathData="M54,24A30,30 0,1 1,54 84A30,30 0,1 1,54 24z" />
+    <!-- Detalle Dorado #F9E795 -->
+    <path
+        android:fillColor="#F9E795"
+        android:pathData="M38,48h32v14c0,8.8 -7.2,16 -16,16s-16,-7.2 -16,-16z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M42,36h24v8h-24z" />
+</vector>
