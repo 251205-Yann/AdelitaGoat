@@ -79,6 +79,8 @@ El 10 de noviembre se verificó la API publicada: `/api/health` respondió `UP` 
 
 Para desarrollo local, abrir `android/` en Android Studio y ejecutar `server/` con JDK 21. [README.md](../README.md) contiene comandos y variables. El código está en [GitHub](https://github.com/251205-Yann/AdelitaGoat), PostgreSQL está en el proyecto Supabase `adelitagoat-escolar` y la API Ktor se ejecuta en [Render](https://adelitagoat-api.onrender.com/api/health). El backend usa el Session Pooler de Supabase con TLS, usuario exclusivo y esquema privado `adelita`. El contenedor desactiva la base local y las semillas demo. Las credenciales se guardan como variables privadas de Render y no se incluyen en el repositorio ni en el APK.
 
+Las tablas del esquema `adelita` no tienen RLS activado. Supabase señala esto en su inventario general; el esquema es privado y los roles `anon` y `authenticated` no tienen permiso `USAGE` sobre él. Si en el futuro se expone ese esquema mediante la Data API o se conceden permisos directos a otros roles, se deben activar RLS y políticas específicas antes de abrir el acceso.
+
 El APK se compiló con `API_BASE_URL=https://adelitagoat-api.onrender.com` y `ENABLE_DEMO_ACCOUNTS=false`. Es una compilación **debug firmada para instalación y evaluación escolar**, no un paquete de publicación para Google Play. Queda pendiente validar el recorrido en un teléfono físico con conexión móvil y cargar el comercio real cuando se reciban sus datos autorizados.
 
 ## 10. Limitaciones y siguientes datos necesarios

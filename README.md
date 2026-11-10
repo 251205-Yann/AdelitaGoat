@@ -2,7 +2,7 @@
 
 Aplicación móvil Android (**Kotlin + Jetpack Compose**) y API Backend (**Ktor + PostgreSQL**) orientada a estudiantes y vendedores de puestos de comida ubicados frente a la **Universidad Politécnica de Chiapas (UP Chiapas)**. Permite apartar alimentos desde el celular, recibir un folio único del pedido (`#A-XXXX`), evitar filas en recesos cortos y pagar **en efectivo al recoger en mostrador** (`EFECTIVO_AL_RECOGER`).
 
-**Despliegue escolar (10 de noviembre de 2026):** [API pública](https://adelitagoat-api.onrender.com/api/health) en Render, PostgreSQL en [Supabase](https://supabase.com/dashboard/project/fhodeskjjpjtllcapdzw) y APK de demostración compilado con esa URL HTTPS. La base contiene categorías de referencia y no contiene usuarios, puestos ni pedidos ficticios. El informe está en [`docs/informe-tecnico.md`](docs/informe-tecnico.md).
+**Despliegue escolar (10 de noviembre de 2026):** [API pública](https://adelitagoat-api.onrender.com/api/health) en Render, PostgreSQL en [Supabase](https://supabase.com/dashboard/project/fhodeskjjpjtllcapdzw) y [APK de demostración descargable](https://github.com/251205-Yann/AdelitaGoat/releases/download/v1.0.0-escolar/AdelitaGOAT-public-api-debug.apk) compilado con esa URL HTTPS. La base contiene categorías de referencia y no contiene usuarios, puestos ni pedidos ficticios. El [informe técnico en PDF](output/pdf/Informe_tecnico_AdelitaGOAT.pdf) y su [fuente editable](docs/informe-tecnico.md) están en este repositorio.
 
 ---
 
