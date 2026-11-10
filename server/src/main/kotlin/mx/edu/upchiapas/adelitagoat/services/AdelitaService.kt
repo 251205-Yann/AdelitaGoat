@@ -29,10 +29,6 @@ class AdelitaService(private val dataSource: DataSource) {
         return bytes.joinToString("") { "%02x".format(it) }
     }
 
-    // =========================================================================
-    // 1. AUTENTICACIÓN Y SESIONES
-    // =========================================================================
-
     fun register(req: RegisterRequest): AuthResponse {
         val cleanName = req.name.trim()
         val cleanEmail = req.email.trim().lowercase(Locale.ROOT)
