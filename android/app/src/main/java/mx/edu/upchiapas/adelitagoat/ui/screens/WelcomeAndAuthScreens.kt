@@ -121,49 +121,9 @@ fun AuthScreen(
     var password by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var showServerDialog by remember { mutableStateOf(false) }
 
     val isLoading by authViewModel.isLoading.collectAsState()
     val errorMessage by authViewModel.errorMessage.collectAsState()
-    val currentBaseUrl by authViewModel.baseUrl.collectAsState()
-
-    if (showServerDialog) {
-        var urlInput by remember { mutableStateOf(currentBaseUrl) }
-        AlertDialog(
-            onDismissRequest = { showServerDialog = false },
-            title = { Text("Configurar URL del Servidor API", fontWeight = FontWeight.Bold) },
-            text = {
-                Column {
-                    Text(
-                        "En el emulador Android usa http://10.0.2.2:8080. En dispositivo físico usa la IP local de tu PC.",
-                        fontSize = 13.sp,
-                        color = AdelitaTextMuted
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    OutlinedTextField(
-                        value = urlInput,
-                        onValueChange = { urlInput = it },
-                        label = { Text("Base URL") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    authViewModel.updateBaseUrl(urlInput)
-                    showServerDialog = false
-                }) {
-                    Text("Guardar", color = AdelitaNavy, fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showServerDialog = false }) {
-                    Text("Cancelar")
-                }
-            }
-        )
-    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -176,22 +136,6 @@ fun AuthScreen(
                 .padding(horizontal = 24.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                TextButton(onClick = { showServerDialog = true }) {
-                    Icon(
-                        imageVector = Icons.Default.SettingsEthernet,
-                        contentDescription = "Configurar API",
-                        tint = AdelitaNavy,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("API", color = AdelitaNavy, fontSize = 12.sp)
-                }
-            }
-
             AdelitaLogoBadge(size = 64.dp, iconSize = 34.dp)
             Spacer(modifier = Modifier.height(10.dp))
             AdelitaBrandTitle(fontSizeSp = 20)

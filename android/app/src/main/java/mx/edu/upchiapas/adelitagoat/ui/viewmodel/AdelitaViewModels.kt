@@ -20,9 +20,6 @@ class AuthViewModel(private val repository: AdelitaRepository) : ViewModel() {
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
-    private val _baseUrl = MutableStateFlow(repository.sessionStore.getBaseUrl())
-    val baseUrl: StateFlow<String> = _baseUrl.asStateFlow()
-
     init {
         if (repository.sessionStore.getToken() != null) {
             viewModelScope.launch {
@@ -33,11 +30,6 @@ class AuthViewModel(private val repository: AdelitaRepository) : ViewModel() {
 
     fun clearError() {
         _errorMessage.value = null
-    }
-
-    fun updateBaseUrl(newUrl: String) {
-        repository.sessionStore.setBaseUrl(newUrl)
-        _baseUrl.value = repository.sessionStore.getBaseUrl()
     }
 
     fun markOnboardingSeen() {

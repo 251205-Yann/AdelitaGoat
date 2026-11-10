@@ -71,20 +71,7 @@ class SessionStore(context: Context) {
         prefs.edit().putBoolean(KEY_ONBOARDING_SEEN, true).apply()
     }
 
-    fun getBaseUrl(): String {
-        return prefs.getString(KEY_BASE_URL, BuildConfig.DEFAULT_BASE_URL)
-            ?.trim()
-            ?.removeSuffix("/")
-            ?.takeIf { it.isNotEmpty() }
-            ?: BuildConfig.DEFAULT_BASE_URL
-    }
-
-    fun setBaseUrl(url: String) {
-        val clean = url.trim().removeSuffix("/")
-        if (clean.isNotEmpty()) {
-            prefs.edit().putString(KEY_BASE_URL, clean).apply()
-        }
-    }
+    fun getBaseUrl(): String = BuildConfig.DEFAULT_BASE_URL.trim().removeSuffix("/")
 
     companion object {
         private const val KEY_TOKEN = "token"
@@ -95,6 +82,5 @@ class SessionStore(context: Context) {
         private const val KEY_USER_PHONE = "user_phone"
         private const val KEY_USER_ROLE = "user_role"
         private const val KEY_ONBOARDING_SEEN = "onboarding_seen"
-        private const val KEY_BASE_URL = "api_base_url"
     }
 }

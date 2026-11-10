@@ -108,14 +108,12 @@ El APK compilado se genera en:
 
 ---
 
-## 4. Configuración en Android Studio y Emulador (`10.0.2.2`)
+## 4. Configuración en Android Studio y Emulador
 
 1. Abre **Android Studio** y selecciona **Open** → `C:\Users\danie\Downloads\yandelApp\android`.
 2. En **Settings → Build, Execution, Deployment → Build Tools → Gradle**, verifica que **Gradle JVM** apunte a **JDK 21** (`C:\Users\danie\.jdks\temurin-21`).
-3. Asegúrate de que el backend Ktor (`server`) esté corriendo en el puerto `8080`.
-4. **Conectividad desde el Emulador Android:**
-   - La app está preconfigurada con `DEFAULT_BASE_URL = "http://10.0.2.2:8080"`, que es el alias de red especial del emulador de Android para alcanzar el `localhost` de la máquina anfitriona.
-   - Si ejecutas la app en un **dispositivo físico** conectado a la misma red Wi-Fi o contra un servidor remoto HTTPS, toca el botón **API** en la esquina superior derecha de la pantalla de inicio de sesión (o en la pestaña **Perfil**) y cambia la URL.
+3. La app apunta por defecto a `https://adelitagoat-api.onrender.com`. La URL no se muestra ni se cambia desde la interfaz del usuario.
+4. **Desarrollo local:** si quieres usar el backend Ktor en tu laptop, ejecútalo en el puerto `8080` y compila Android con `-PAPI_BASE_URL=http://10.0.2.2:8080`. `10.0.2.2` es el alias del emulador para alcanzar el `localhost` de la máquina anfitriona. Para un teléfono físico, compila con una URL accesible desde ese teléfono.
 5. **AVD local disponible (`Medium_Phone_API_37.0`):**
    - El entorno local cuenta con el AVD funcional `Medium_Phone_API_37.0` (`emulator.exe -list-avds`).
    - Para iniciarlo e instalar el APK desde PowerShell:
@@ -207,7 +205,7 @@ cd C:\Users\danie\Downloads\yandelApp\android
 
 - El APK listo para instalar en dispositivos físicos o emulador se generará en:
   `C:\Users\danie\Downloads\yandelApp\android\app\build\outputs\apk\debug\app-debug.apk`
-- **Cambio rápido de URL sin recompilar:** Si ya tienes el APK instalado y deseas apuntarlo a otra URL, toca el botón **API** en la esquina superior derecha de la pantalla de inicio de sesión (o en la pestaña **Perfil**), ingresa la nueva URL HTTPS y guarda.
+- La URL del servidor sólo se cambia al compilar con `-PAPI_BASE_URL=...`; no aparece una configuración de API en el login ni en el perfil.
 
 ### 5.3. Modo Demo Optativo (`.example.invalid`)
 

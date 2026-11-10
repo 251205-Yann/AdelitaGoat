@@ -221,7 +221,7 @@ class AdelitaApiClient(
         } catch (ex: Exception) {
             throw ApiClientException(
                 0,
-                "No se pudo conectar con el servidor (${baseUrlProvider()}). Verifica que el backend Ktor esté en ejecución."
+                "No se pudo conectar. Revisa tu conexión a internet e inténtalo de nuevo."
             )
         }
     }

@@ -1602,10 +1602,6 @@ fun ProfileScreen(
     authViewModel: AuthViewModel,
     onLoggedOut: () -> Unit
 ) {
-    val baseUrl by authViewModel.baseUrl.collectAsState()
-    var urlInput by remember(baseUrl) { mutableStateOf(baseUrl) }
-    var urlSavedBanner by remember { mutableStateOf(false) }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -1641,58 +1637,6 @@ fun ProfileScreen(
                 fontSize = 12.sp,
                 modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
             )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = AdelitaSurfaceGray),
-            shape = RoundedCornerShape(14.dp)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = "Conexión con API Backend Ktor",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    color = AdelitaNavy
-                )
-                Text(
-                    text = "Por defecto en el emulador Android: http://10.0.2.2:8080",
-                    fontSize = 12.sp,
-                    color = AdelitaTextMuted
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                OutlinedTextField(
-                    value = urlInput,
-                    onValueChange = {
-                        urlInput = it
-                        urlSavedBanner = false
-                    },
-                    singleLine = true,
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = {
-                        authViewModel.updateBaseUrl(urlInput)
-                        urlSavedBanner = true
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = AdelitaNavy),
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text("Guardar URL")
-                }
-                if (urlSavedBanner) {
-                    Text(
-                        text = "URL actualizada a ${authViewModel.baseUrl.value}",
-                        color = AdelitaSuccessGreen,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-            }
         }
 
         Spacer(modifier = Modifier.height(28.dp))

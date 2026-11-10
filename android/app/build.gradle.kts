@@ -19,7 +19,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         val defaultBaseUrl = (project.findProperty("API_BASE_URL")?.toString()
             ?: System.getenv("API_BASE_URL")
-            ?: "http://10.0.2.2:8080").trim()
+            ?: "https://adelitagoat-api.onrender.com").trim()
         val enableDemoAccounts = (project.findProperty("ENABLE_DEMO_ACCOUNTS")?.toString()
             ?: System.getenv("ENABLE_DEMO_ACCOUNTS")
             ?: "false").toBoolean()
